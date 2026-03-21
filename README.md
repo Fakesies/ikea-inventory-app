@@ -30,6 +30,8 @@ PyMongo documentation: https://pymongo.readthedocs.io/
 ---
 # AI AGENT USE: 
 Tool: ChatGPT
-Prompts used: Summarize assignment requirements, provide step-by-step guidance for Python + MongoDB setup on a fresh machine, and code skeletons with guiding comments
+Prompts used: Summarize assignment requirements, provide step-by-step guidance for Python + MongoDB setup on a fresh machine, and code skeletons with guiding comments.
+After implementation, asked to comment code to make life easier during the demo. 
 
-Responses used: Code skeletons for load_json.py and main.py, guide based on summary of assignment description, guiding comments on skeleton code, and debugging guidance
+Responses used: Code skeletons for load_json.py and main.py, guide based on summary of assignment description, guiding comments on skeleton code, and debugging guidance.
+Explanatory comments AFTER implementation. 

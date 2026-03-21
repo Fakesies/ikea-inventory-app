@@ -1,5 +1,17 @@
-import sys
-from pymongo import MongoClient
+# -----------------------------
+# main.py
+# -----------------------------
+# This script provides an interactive menu for a furniture database.
+# Features include:
+# - Checking if an item is on discount
+# - Searching furniture by keyword or category
+# - Adding new furniture
+# - Paginated display of items
+# -----------------------------
+
+import sys  # Access to command-line arguments
+from pymongo import MongoClient  # MongoDB driver to interact with database
+
 
 # -----------------------------
 # Helper function: display items in pages
@@ -9,36 +21,40 @@ def display_paginated(items, page_size=5):
     Display a list of items in pages of 'page_size'.
     Allows user to navigate Next/Previous.
     """
-    if not items:
+    if not items:  # check if the list is empty
         print("No items found.")
         return
 
-    total = len(items)
-    page = 0
+    total = len(items)  # total number of items
+    page = 0           # current page index (starts at 0)
 
-    while True:
+    while True:  # loop until user quits
         start = page * page_size
         end = start + page_size
+        # Display header for current page
         print(f"\n--- Showing items {start + 1} to {min(end, total)} of {total} ---")
+        # Enumerate over items for this page
         for i, item in enumerate(items[start:end], start=1):
+            # Display main info: name, category, price
             print(f"{start + i}. {item['name']} | {item['category']} | ${item['price']}")
+            # Optional short description
             if 'short_description' in item:
                 print(f"   {item['short_description']}")
 
-        # Navigation
+        # Navigation input from user
         nav = input("\nEnter N for Next, P for Previous, or Q to Quit pagination: ").strip().upper()
         if nav == "N":
             if end >= total:
                 print("Already on last page.")
             else:
-                page += 1
+                page += 1  # move to next page
         elif nav == "P":
             if page == 0:
                 print("Already on first page.")
             else:
-                page -= 1
+                page -= 1  # move to previous page
         elif nav == "Q":
-            break
+            break  # exit pagination
         else:
             print("Invalid input.")
 
@@ -48,16 +64,17 @@ def display_paginated(items, page_size=5):
 # -----------------------------
 def discount_check(collection):
     """
-    Ask user for furniture name and check if it's on discount
+    Ask user for furniture name and check if it's on discount.
     """
     name = input("Enter furniture name to check discount: ").strip()
+    # Search for items with exact name
     results = list(collection.find({"name": name}))
 
     if not results:
         print("No furniture found with that name.")
         return
 
-    # If multiple items with same name, allow user to choose by ID
+    # If multiple items with same name, allow user to select by ID
     if len(results) > 1:
         print("Multiple items found:")
         for i, item in enumerate(results):
@@ -67,7 +84,7 @@ def discount_check(collection):
     else:
         item = results[0]
 
-    # Check discount
+    # Check if old_price exists and is greater than current price
     if item.get("old_price") and item["old_price"] > item["price"]:
         print(f"Name: {item['name']}")
         print(f"Category: {item['category']}")
@@ -79,16 +96,17 @@ def discount_check(collection):
 
 def keyword_search(collection):
     """
-    Search furniture by keyword in name (case-sensitive)
+    Search furniture by keyword in name (case-sensitive).
     """
     keyword = input("Enter keyword to search in furniture names: ").strip()
+    # MongoDB $regex performs pattern matching
     results = list(collection.find({"name": {"$regex": keyword}}))
-    display_paginated(results)
+    display_paginated(results)  # use helper function to show results in pages
 
 
 def category_search(collection):
     """
-    Search furniture by category (display names and IDs in descending price order)
+    Search furniture by category and display items in descending price order.
     """
     # Get list of unique categories
     categories = collection.distinct("category")
@@ -102,9 +120,10 @@ def category_search(collection):
         return
 
     selected_category = categories[choice]
+    # Find all items in this category, sorted by price descending
     results = list(collection.find({"category": selected_category}).sort("price", -1))
 
-    # Display paginated list of names and IDs
+    # Paginate results
     page_size = 5
     total = len(results)
     page = 0
@@ -114,8 +133,10 @@ def category_search(collection):
         end = start + page_size
         print(f"\n--- {selected_category} items {start + 1} to {min(end, total)} of {total} ---")
         for i, item in enumerate(results[start:end], start=1):
+            # Show name, ID, price for each item
             print(f"{start + i}. Name: {item['name']}, ID: {item['item_id']}, Price: ${item['price']}")
 
+        # Navigation options
         nav = input("Enter N for Next, P for Previous, S to select item, Q to quit: ").strip().upper()
         if nav == "N":
             if end >= total:
@@ -128,6 +149,7 @@ def category_search(collection):
             else:
                 page -= 1
         elif nav == "S":
+            # User can view full details of a specific item
             item_id = input("Enter item_id to view full details: ").strip()
             item = collection.find_one({"item_id": item_id})
             if item:
@@ -147,22 +169,24 @@ def category_search(collection):
 
 def add_item(collection):
     """
-    Add new furniture to the database
+    Add new furniture to the database.
     """
     print("\nEnter new furniture details:")
 
     item_id = input("Item ID: ").strip()
-    # Check uniqueness
+    # Check if item_id already exists (must be unique)
     if collection.find_one({"item_id": item_id}):
         print("Item ID already exists. Cannot add.")
         return
 
+    # Prompt for other item details
     name = input("Name: ").strip()
     category = input("Category: ").strip()
-    price = float(input("Price: ").strip())
+    price = float(input("Price: ").strip())  # convert input to float
     short_description = input("Short Description: ").strip()
     designer = input("Designer: ").strip()
 
+    # Construct new item dictionary
     new_item = {
         "item_id": item_id,
         "name": name,
@@ -170,6 +194,7 @@ def add_item(collection):
         "price": price,
         "short_description": short_description,
         "designer": designer,
+        # Optional fields are set to None by default
         "old_price": None,
         "sellable_online": None,
         "other_colors": None,
@@ -178,6 +203,7 @@ def add_item(collection):
         "width": None
     }
 
+    # Insert the new document into MongoDB collection
     collection.insert_one(new_item)
     print("Item successfully added!")
 
@@ -187,18 +213,24 @@ def add_item(collection):
 # -----------------------------
 def main():
     """
-    Main menu loop
+    Main menu loop.
+    Handles:
+    - Connecting to MongoDB
+    - Displaying interactive menu
+    - Routing user choices to appropriate functions
     """
     if len(sys.argv) != 2:
         print("Usage: python main.py <port>")
         return
 
     port = sys.argv[1]
+    # Connect to MongoDB
     client = MongoClient(f"mongodb://localhost:{port}/")
-    db = client["291db"]
-    collection = db["furniture"]
+    db = client["291db"]  # Access database
+    collection = db["furniture"]  # Access furniture collection
 
     while True:
+        # Display menu options
         print("\n=== IKEA Furniture Database ===")
         print("1. Check Discount")
         print("2. Search by Keyword")
@@ -208,6 +240,7 @@ def main():
 
         choice = input("Choose an option: ").strip()
 
+        # Route user input to corresponding function
         if choice == "1":
             discount_check(collection)
         elif choice == "2":
@@ -223,5 +256,6 @@ def main():
             print("Invalid choice.")
 
 
+# Run the main program only if this script is executed directly
 if __name__ == "__main__":
     main()
