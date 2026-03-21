@@ -2,16 +2,31 @@
 # W26-MP2-CMPUT291
 
 # GROUP INFORMATION:
-You must list the names and CCIDs of all group members, as well as the names of anyone you have collaborated with (as much as it is allowed within the course policy), or a line saying that you did not collaborate with anyone else. 
+- Name: Austin Gwartney  
+- CCID: gwartney  
+- Name: 
+- CCID:
+
 ---
+
 # INSTRUCTIONS:
-Steps required to run the code
+Steps required to run the code:
+
+1. Ensure MongoDB is installed and running.
+2. Load JSON data into the database using:
+    python load_json.py data/sample_10.json 27017 
+3. Run the main program to interact with the furniture database:
+    python main.py 27017
 
 ---
 # SOURCES OF INFORMATION:
-This is the place to acknowledge the use of any source of information besides the course textbook and/or class notes
-
+Assignment specification provided in class
+MongoDB documentation: https://www.mongodb.com/docs/
+PyMongo documentation: https://pymongo.readthedocs.io/
+ChatGPT
 ---
 # AI AGENT USE: 
-If you have utilized any AI tools, such as ChatGPT, Deepseek, Claude, Gemini, or other similar AI platforms, you are required to provide more details in the AI Agent section. This should include the prompts you used and the responses you received from the model.
-If no AI tools were used, please include a statement confirming this.
+Tool: ChatGPT
+Prompts used: Step-by-step guidance for Python + MongoDB setup, code skeletons, with guiding comments. 
+
+Responses used: Code skeletons for load_json.py and main.py, full explanations, and debugging guidance
