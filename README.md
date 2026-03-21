@@ -22,7 +22,9 @@ Steps required to run the code:
 ---
 # SOURCES OF INFORMATION:
 Assignment specification provided in class
+
 MongoDB documentation: https://www.mongodb.com/docs/
+
 PyMongo documentation: https://pymongo.readthedocs.io/
 
 ---
