@@ -17,16 +17,17 @@ Steps required to run the code:
     python load_json.py data/sample_10.json 27017 
 3. Run the main program to interact with the furniture database:
     python main.py 27017
+4. mongosh to view the db on command line. 
 
 ---
 # SOURCES OF INFORMATION:
 Assignment specification provided in class
 MongoDB documentation: https://www.mongodb.com/docs/
 PyMongo documentation: https://pymongo.readthedocs.io/
-ChatGPT
+
 ---
 # AI AGENT USE: 
 Tool: ChatGPT
-Prompts used: Step-by-step guidance for Python + MongoDB setup, code skeletons, with guiding comments. 
+Prompts used: Summarize assignment requirements, provide step-by-step guidance for Python + MongoDB setup on a fresh machine, and code skeletons with guiding comments
 
-Responses used: Code skeletons for load_json.py and main.py, full explanations, and debugging guidance
+Responses used: Code skeletons for load_json.py and main.py, guide based on summary of assignment description, guiding comments on skeleton code, and debugging guidance
